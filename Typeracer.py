@@ -30,7 +30,7 @@ class Typeracer(discord.Client):
             await self.announce_race(message)
             await self.send_random_text(message)
 
-        if   self.ongoing_race:
+        if self.ongoing_race:
             # adds members of the server to the race
             if message.content == "/join race":
                 self.participants.append(message.author)
