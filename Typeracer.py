@@ -1,8 +1,10 @@
 import discord
+from time import sleep
 from random import randint
 from typing import List
 from dotenv import load_dotenv
 from os import getenv
+from asyncio import sleep
 
 load_dotenv()
 TOKEN = getenv("DISCORD_BOT_TOKEN")
@@ -19,7 +21,9 @@ texts = [
 class Typeracer(discord.Client):
     participants: List[discord.Member] = []
     race_text: str = ""
-    is_ongoing_race: bool = False
+    is_joining_phase: bool = False
+    race_is_started: bool = False
+    JOINING_PHASE_TIMER: int = 10
 
     async def on_message(self, message):
         # ignores the messages by the bot itself
@@ -28,32 +32,47 @@ class Typeracer(discord.Client):
 
         # can start a race by typing a certain command
         if message.content == '/typeracer start':
-            if self.is_ongoing_race is True:
+            if self.is_joining_phase is True:
                 return await message.channel.send("A race has already been started.")
 
-            await self.announce_race(message)
-            await self.send_random_text(message)
+            await self.announce_race(message.channel)
+            await sleep(self.JOINING_PHASE_TIMER)
+            await self.countdown(message.channel)
+            await self.send_random_text(message.channel)
 
-        if self.is_ongoing_race:
-            # adds members of the server to the race
-            if message.content == "/typeracer join":
-                await message.channel.send("<@" + str(message.author.id) + ">" + " has joined the race!")
-                self.participants.append(message.author)
+        # adds members of the server to the race
+        if message.content == "/typeracer join" and self.is_joining_phase is True:
+            await message.channel.send("<@" + str(message.author.id) + ">" + " has joined the race!")
+            self.participants.append(message.author)
 
+        if self.race_is_started is True:
             # members who type out the text correctly, win
             if message.author in self.participants and message.content == self.race_text:
                 # messages the winners
                 await message.channel.send("<@" + str(message.author.id) + ">" + " got it right!")
                 self.race_text = ""
 
-    async def announce_race(self, message: discord.Message):
-        self.is_ongoing_race = True
-        await message.channel.send("A new race has started! You have 5 seconds to type `/join race` to participate.")
+    async def announce_race(self, channel: discord.TextChannel):
+        self.is_joining_phase = True
+        await channel.send(
+            "A new race has started! "
+            "You have " + str(self.JOINING_PHASE_TIMER) + " seconds to type `/typeracer join` to participate.")
 
-    async def send_random_text(self, message: discord.Message):
+    async def send_random_text(self, channel: discord.TextChannel):
         # picks a random text and messages it to the server
         self.race_text = texts[randint(0, len(texts) - 1)]
-        await message.channel.send(self.race_text)
+        await channel.send(self.race_text)
+
+    async def countdown(self, channel: discord.TextChannel):
+        self.is_joining_phase = False
+        await channel.send("All participants have been locked in.")
+        await sleep(1)
+        await channel.send("Ready.")
+        await sleep(1)
+        await channel.send("Set.")
+        await sleep(randint(1, 3))
+        await channel.send("Type!")
+        self.race_is_started = True
 
 
 client = Typeracer()
