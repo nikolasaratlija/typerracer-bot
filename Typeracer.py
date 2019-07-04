@@ -1,7 +1,7 @@
 import discord
 from time import sleep
 from random import randint
-from typing import List
+from typing import Dict
 from dotenv import load_dotenv
 from os import getenv
 from asyncio import sleep
@@ -21,10 +21,10 @@ TEXTS = [
 class Typeracer(discord.Client):
     __JOINING_PHASE_TIMER: int = 10
 
-    participants: List[discord.Member] = []
+    players: Dict[discord.Member, Dict] = {}
     current_text: str = ""
     is_joining_phase: bool = False
-    race_is_started: bool = False
+    race_is_ongoing: bool = False
 
     async def on_message(self, message):
         # ignores the messages by the bot itself
@@ -50,14 +50,23 @@ class Typeracer(discord.Client):
         # adds members of the server to the race
         if message.content == "/typeracer join" and self.is_joining_phase is True:
             await message.channel.send("<@" + str(message.author.id) + ">" + " has joined the race!")
-            self.participants.append(message.author)
+            self.players[message.author] = {"finished": False}
 
         # members who type out the text correctly, win
-        if self.race_is_started is True:
-            if message.author in self.participants and message.content == self.current_text:
-                # messages the winners
-                await message.channel.send("<@" + str(message.author.id) + ">" + " got it right!")
-                self.current_text = ""
+        if self.race_is_ongoing is True:
+            if message.author in self.players and message.content == self.current_text:
+                await self.mention_winner(message.author, message.channel)
+            # checks whether all players have finished
+            if all(player["finished"] is True for player in self.players.values()) is True:
+                await self.end_race("All players have finished!", message.channel)
+
+    async def end_race(self, reason: str, channel: discord.TextChannel):
+        self.race_is_ongoing = False
+        await channel.send(reason + " To start a new race, type `/typeracer start.`")
+
+    async def mention_winner(self, winner: discord.Member, channel: discord.TextChannel):
+        self.players[winner]["finished"] = True
+        await channel.send("<@" + str(winner.id) + ">" + " got it right!")
 
     async def announce_race(self, channel: discord.TextChannel):
         self.is_joining_phase = True
@@ -78,7 +87,7 @@ class Typeracer(discord.Client):
         await channel.send("Set.")
         await sleep(randint(1, 3))  # This interval is random because I thought it would be funny.
         await channel.send("Type!")
-        self.race_is_started = True
+        self.race_is_ongoing = True
 
 
 client = Typeracer()
