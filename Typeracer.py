@@ -44,6 +44,11 @@ class Typeracer(discord.Client):
         if message.content == '/typeracer start' and self.is_joining_phase is False:
             await self.announce_race(message.channel)
             await sleep(self.__JOINING_PHASE_TIMER)  # this waiting period gives clients time to join the race
+
+            # stops if no one joins the race
+            if len(self.players) == 0:
+                return await self.terminate_race("No one joined the race...", message.channel)
+
             await self.countdown(message.channel)
             await self.send_random_text(message.channel)
 
@@ -58,9 +63,10 @@ class Typeracer(discord.Client):
                 await self.mention_winner(message.author, message.channel)
             # checks whether all players have finished
             if all(player["finished"] is True for player in self.players.values()) is True:
-                await self.end_race("All players have finished!", message.channel)
+                await self.terminate_race("All players have finished!", message.channel)
 
-    async def end_race(self, reason: str, channel: discord.TextChannel):
+    async def terminate_race(self, reason: str, channel: discord.TextChannel):
+        self.is_joining_phase = False
         self.race_is_ongoing = False
         await channel.send(reason + " To start a new race, type `/typeracer start.`")
 
