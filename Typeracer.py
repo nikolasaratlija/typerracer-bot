@@ -27,20 +27,21 @@ class Typeracer(discord.Client):
     race_is_ongoing: bool = False
 
     async def on_message(self, message):
-        # ignores the messages by the bot itself
+        # region messages by the bot itself are ignored
         if message.author == self.user:
             return
+        # endregion
 
-        # prints a list of commands
+        # region command help: prints a list of commands
         if message.content == '/typeracer help':
             await message.channel.send(
                 "Command list: \n"
                 "`/typeracer help`: A list of commands. \n"
                 "`/typeracer start`: Starts a new race. Client will be given 10 seconds to join the race. \n"
-                "`/typeracer join`: Adds the client who typed this command to a race if one has been started."
-            )
+                "`/typeracer join`: Adds the client who typed this command to a race if one has been started.")
+        # endregion
 
-        # can start a race by typing a certain command
+        # region command start: can start a race by typing a certain command
         if message.content == '/typeracer start' and self.is_joining_phase is False:
             await self.announce_race(message.channel)
             await sleep(self.__JOINING_PHASE_TIMER)  # this waiting period gives clients time to join the race
@@ -51,28 +52,31 @@ class Typeracer(discord.Client):
 
             await self.countdown(message.channel)
             await self.send_random_text(message.channel)
+        # endregion
 
-        # adds members of the server to the race
+        # region command join: adds members of the server to the race
         if message.content == "/typeracer join" and self.is_joining_phase is True:
             await message.channel.send("<@" + str(message.author.id) + ">" + " has joined the race!")
             self.players[message.author] = {"finished": False}
+        # endregion
 
-        # members who type out the text correctly, win
+        # region members who type out the text correctly during a race, win
         if self.race_is_ongoing is True:
             if message.author in self.players and message.content == self.current_text:
                 await self.mention_winner(message.author, message.channel)
             # checks whether all players have finished
             if all(player["finished"] is True for player in self.players.values()) is True:
                 await self.terminate_race("All players have finished!", message.channel)
+        # endregion
 
     async def terminate_race(self, reason: str, channel: discord.TextChannel):
         self.is_joining_phase = False
         self.race_is_ongoing = False
-        await channel.send(reason + " To start a new race, type `/typeracer start.`")
+        await channel.send(reason + " To start a new race, type `/typeracer start`.")
 
     async def mention_winner(self, winner: discord.Member, channel: discord.TextChannel):
         self.players[winner]["finished"] = True
-        await channel.send("<@" + str(winner.id) + ">" + " got it right!")
+        await channel.send(winner.mention + " got it right!")
 
     async def announce_race(self, channel: discord.TextChannel):
         self.is_joining_phase = True
