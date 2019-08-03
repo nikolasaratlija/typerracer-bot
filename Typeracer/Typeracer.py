@@ -2,7 +2,7 @@ import discord
 from random import randint
 from typing import Dict
 from asyncio import sleep
-from Typeracer import anti_copy
+from Typeracer import exceptions
 
 TEXTS = [
     "You are what you are and you are where you are because of what has gone into your mind. You change what you are and you change where you are by changing what goes into your mind.",
@@ -41,20 +41,18 @@ class Typeracer(discord.Client):
         # endregion
 
         # region command start: can start a race by typing a certain command
-        if message.content == '/typeracer start' and self.is_joining_phase is False:
-            await self.announce_race(message.channel)
-
-            # stops if no one joins the race
-            if len(self.players) == 0:
-                return await self.close_race("No one joined the race...", message.channel)
-
-            await self.countdown(message.channel)
-            await self.send_random_text(message.channel)
+        try:
+            if message.content == '/typeracer start' and self.is_joining_phase is False:
+                await self.announce_race(message.channel)
+                await self.countdown(message.channel)
+                await self.send_random_text(message.channel)
+        except exceptions.NoParticipantsException:
+            return await self.close_race("No one joined the race...", message.channel)
         # endregion
 
         # region command join: adds members of the server to the race
         if message.content == "/typeracer join" and self.is_joining_phase is True:
-            await message.channel.send("<@" + str(message.author.id) + ">" + " has joined the race!")
+            await message.channel.send(str(message.author.mention) + " has joined the race!")
             self.players[message.author] = {"finished": False}
         # endregion
 
@@ -79,31 +77,36 @@ class Typeracer(discord.Client):
     async def announce_race(self, channel: discord.TextChannel):
         self.is_joining_phase = True
 
-        seconds = self.__JOINING_PHASE_TIMER
         countdown_message = await channel.send(
             "A new race has started! "
             "You have " + str(self.__JOINING_PHASE_TIMER) + " second(s) to type `/typeracer join` to participate.")
 
+        seconds = self.__JOINING_PHASE_TIMER
         while seconds > 0:
             await sleep(1)
             seconds -= 1
             await discord.Message.edit(
-                countdown_message, 
+                countdown_message,
                 content="A new race has started! You have " +
                         str(seconds) + " second(s) to type `/typeracer join` to participate.")
 
+        await discord.Message.edit(countdown_message, content="Can no longer join this race.")
+
+        # if no one joins a race
+        if len(self.players) == 0:
+            raise exceptions.NoParticipantsException
+
     async def send_random_text(self, channel: discord.TextChannel):
         self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
-        await channel.send(
-            anti_copy.encrypt(self.current_text))
+        await channel.send(self.current_text)
 
     async def countdown(self, channel: discord.TextChannel):
         self.is_joining_phase = False
-        await channel.send("All participants have been locked in...")
+        message = await channel.send("All participants have been locked in...")
         await sleep(1)
-        await channel.send("Ready?")
+        await discord.Message.edit(message, content="Ready?")
         await sleep(1)
-        await channel.send("Set.")
+        await discord.Message.edit(message, content="Set.")
         await sleep(randint(1, 3))  # This interval is random because I thought it would be funny.
-        await channel.send("Type!")
+        await discord.Message.edit(message, content="Type!")
         self.race_is_ongoing = True
