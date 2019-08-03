@@ -1,13 +1,9 @@
 import discord
-from time import sleep
 from random import randint
 from typing import Dict
-from dotenv import load_dotenv
-from os import getenv
 from asyncio import sleep
+from Typeracer import anti_copy
 
-load_dotenv()
-TOKEN = getenv("DISCORD_BOT_TOKEN")
 
 TEXTS = [
     "You are what you are and you are where you are because of what has gone into your mind. You change what you are and you change where you are by changing what goes into your mind.",
@@ -26,6 +22,9 @@ class Typeracer(discord.Client):
     is_joining_phase: bool = False
     race_is_ongoing: bool = False
 
+    async def on_ready(self):
+        await self.change_presence(activity=discord.Game("/typeracer help"))
+
     async def on_message(self, message):
         # region messages by the bot itself are ignored
         if message.author == self.user:
@@ -35,6 +34,7 @@ class Typeracer(discord.Client):
         # region command help: prints a list of commands
         if message.content == '/typeracer help':
             await message.channel.send(
+                "A bot inspired by typeracer.com, made by Nokia#8913 \n"
                 "Command list: \n"
                 "`/typeracer help`: A list of commands. \n"
                 "`/typeracer start`: Starts a new race. Client will be given 10 seconds to join the race. \n"
@@ -86,7 +86,8 @@ class Typeracer(discord.Client):
 
     async def send_random_text(self, channel: discord.TextChannel):
         self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
-        await channel.send(self.current_text)
+        await channel.send(
+            anti_copy.encrypt(self.current_text))
 
     async def countdown(self, channel: discord.TextChannel):
         self.is_joining_phase = False
@@ -98,7 +99,3 @@ class Typeracer(discord.Client):
         await sleep(randint(1, 3))  # This interval is random because I thought it would be funny.
         await channel.send("Type!")
         self.race_is_ongoing = True
-
-
-client = Typeracer()
-client.run(TOKEN)
