@@ -3,14 +3,10 @@ from random import randint
 from typing import Dict
 from asyncio import sleep
 from Typeracer import exceptions
+import json
 
-TEXTS = [
-    "You are what you are and you are where you are because of what has gone into your mind. You change what you are and you change where you are by changing what goes into your mind.",
-    "What you don't have you don't need it now. What you don't know you can feel it somehow. What you don't have you don't need it now.",
-    "When I need to find something out, I just go out and look for somebody that knows more than me, and I go and ask them. Sometimes I ask pretty hard.",
-    "You are what you are and you are where you are because of what has gone into your mind. You change what you are and you change where you are by changing what goes into your mind.",
-    "For what you see and hear depends a good deal on where you are standing. It also depends on what sort of person you are."
-]
+with open("texts.json") as json_file:
+    TEXTS = json.load(json_file)['texts']
 
 
 class Typeracer(discord.Client):
