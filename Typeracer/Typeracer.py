@@ -4,7 +4,6 @@ from typing import Dict
 from asyncio import sleep
 from Typeracer import anti_copy
 
-
 TEXTS = [
     "You are what you are and you are where you are because of what has gone into your mind. You change what you are and you change where you are by changing what goes into your mind.",
     "What you don't have you don't need it now. What you don't know you can feel it somehow. What you don't have you don't need it now.",
@@ -44,7 +43,6 @@ class Typeracer(discord.Client):
         # region command start: can start a race by typing a certain command
         if message.content == '/typeracer start' and self.is_joining_phase is False:
             await self.announce_race(message.channel)
-            await sleep(self.__JOINING_PHASE_TIMER)  # this waiting period gives clients time to join the race
 
             # stops if no one joins the race
             if len(self.players) == 0:
@@ -80,9 +78,19 @@ class Typeracer(discord.Client):
 
     async def announce_race(self, channel: discord.TextChannel):
         self.is_joining_phase = True
-        await channel.send(
+
+        seconds = self.__JOINING_PHASE_TIMER
+        countdown_message = await channel.send(
             "A new race has started! "
-            "You have " + str(self.__JOINING_PHASE_TIMER) + " seconds to type `/typeracer join` to participate.")
+            "You have " + str(self.__JOINING_PHASE_TIMER) + " second(s) to type `/typeracer join` to participate.")
+
+        while seconds > 0:
+            await sleep(1)
+            seconds -= 1
+            await discord.Message.edit(
+                countdown_message, 
+                content="A new race has started! You have " +
+                        str(seconds) + " second(s) to type `/typeracer join` to participate.")
 
     async def send_random_text(self, channel: discord.TextChannel):
         self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
@@ -91,9 +99,9 @@ class Typeracer(discord.Client):
 
     async def countdown(self, channel: discord.TextChannel):
         self.is_joining_phase = False
-        await channel.send("All participants have been locked in.")
+        await channel.send("All participants have been locked in...")
         await sleep(1)
-        await channel.send("Ready.")
+        await channel.send("Ready?")
         await sleep(1)
         await channel.send("Set.")
         await sleep(randint(1, 3))  # This interval is random because I thought it would be funny.
