@@ -77,20 +77,17 @@ class Typeracer(discord.Client):
     async def announce_race(self, channel: discord.TextChannel):
         self.is_joining_phase = True
 
-        countdown_message = await channel.send(
-            "A new race has started! "
-            "You have " + str(self.__JOINING_PHASE_TIMER) + " second(s) to type `/typeracer join` to participate.")
+        countdown_message = await channel.send("A new race has started!")
 
-        seconds = self.__JOINING_PHASE_TIMER
-        while seconds > 0:
-            await sleep(1)
-            seconds -= 1
+        for seconds in range(self.__JOINING_PHASE_TIMER):
             await discord.Message.edit(
                 countdown_message,
                 content="A new race has started! You have " +
-                        str(seconds) + " second(s) to type `/typeracer join` to participate.")
+                        str(self.__JOINING_PHASE_TIMER - seconds) +
+                        " second(s) to type `/typeracer join` to participate.")
+            await sleep(1)
 
-        await discord.Message.edit(countdown_message, content="Can no longer join this race.")
+        await discord.Message.delete(countdown_message)
 
         # if no one joins a race
         if len(self.players) == 0:
