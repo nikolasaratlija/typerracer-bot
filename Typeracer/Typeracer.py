@@ -48,7 +48,7 @@ class Typeracer(discord.Client):
 
             # stops if no one joins the race
             if len(self.players) == 0:
-                return await self.terminate_race("No one joined the race...", message.channel)
+                return await self.close_race("No one joined the race...", message.channel)
 
             await self.countdown(message.channel)
             await self.send_random_text(message.channel)
@@ -63,18 +63,18 @@ class Typeracer(discord.Client):
         # region members who type out the text correctly during a race, win
         if self.race_is_ongoing is True:
             if message.author in self.players and message.content == self.current_text:
-                await self.mention_winner(message.author, message.channel)
+                await self.mention_finishers(message.author, message.channel)
             # checks whether all players have finished
             if all(player["finished"] is True for player in self.players.values()) is True:
-                await self.terminate_race("All players have finished!", message.channel)
+                await self.close_race("All players have finished!", message.channel)
         # endregion
 
-    async def terminate_race(self, reason: str, channel: discord.TextChannel):
+    async def close_race(self, reason: str, channel: discord.TextChannel):
         self.is_joining_phase = False
         self.race_is_ongoing = False
         await channel.send(reason + " To start a new race, type `/typeracer start`.")
 
-    async def mention_winner(self, winner: discord.Member, channel: discord.TextChannel):
+    async def mention_finishers(self, winner: discord.Member, channel: discord.TextChannel):
         self.players[winner]["finished"] = True
         await channel.send(winner.mention + " got it right!")
 
