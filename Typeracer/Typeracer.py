@@ -34,7 +34,7 @@ class Typeracer(discord.Client):
         # region command help: prints a list of commands
         if message.content == '/typeracer help':
             await message.channel.send(
-                "A bot inspired by typeracer.com, made by Nokia#8913 \n"
+                "A bot inspired by typeracer.com, made by <@106574735713767424> \n"
                 "Command list: \n"
                 "`/typeracer help`: A list of commands. \n"
                 "`/typeracer start`: Starts a new race. Client will be given 10 seconds to join the race. \n"
