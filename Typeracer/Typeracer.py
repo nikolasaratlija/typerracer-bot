@@ -1,5 +1,5 @@
 import discord
-from discord import Member, TextChannel
+from discord import Member, TextChannel, Guild
 from random import randint
 from typing import Dict
 from asyncio import sleep
@@ -40,7 +40,8 @@ class Typeracer(discord.Client):
         # region command start: can start a race by typing a certain command
         try:
             if message.content == '/typeracer start' and self.is_joining_phase is False:
-                await self.await_players(message.channel)
+                party = await self.create_party(message.guild)
+                await self.await_players(message.channel, party)
                 await self.countdown(message.channel)
                 await self.send_random_text(message.channel)
         except exceptions.NoParticipantsException:
@@ -62,23 +63,25 @@ class Typeracer(discord.Client):
                 await self.close_race("All players have finished!", message.channel)
         # endregion
 
-    async def await_players(self, channel: TextChannel):
+    async def await_players(self, channel: TextChannel, party):
         self.is_joining_phase = True
 
+        def countdown_message_generator(sec):
+            return "A new race has started! You have " +\
+                   str(sec) +\
+                   " second(s) to type `/typeracer join " + party['id'] + "` to participate."
+
         countdown_message = await channel.send(
-            "A new race has started!" +
-            str(self.__JOINING_PHASE_TIMER) +
-            " second(s) to type `/typeracer join` to participate.")
+            countdown_message_generator(self.__JOINING_PHASE_TIMER))
 
         # counts down the number in `countdown_message` by editing it in a loop
         for seconds in range(self.__JOINING_PHASE_TIMER):
             await discord.Message.edit(
                 countdown_message,
-                content="A new race has started! You have " +
-                        str(self.__JOINING_PHASE_TIMER - seconds) +
-                        " second(s) to type `/typeracer join` to participate.")
+                content=countdown_message_generator(self.__JOINING_PHASE_TIMER - seconds))
             await sleep(1)
 
+        # message gets deleted after joining phase is over
         await discord.Message.delete(countdown_message)
 
         # if no one joins a race, raise an exception
@@ -108,3 +111,13 @@ class Typeracer(discord.Client):
         self.is_joining_phase = False
         self.race_is_ongoing = False
         await channel.send(reason + " To start a new race, type `/typeracer start`.")
+
+    @staticmethod
+    async def create_party(server: Guild):
+        # a random hexadecimal number between 0 and 255
+        unique_key = hex(randint(0, 255))[2:]
+        # returns a unique key used for identifying the newly created channel
+        return {
+            'id': str(unique_key),
+            'channel': await server.create_text_channel("🏁 Typeracer party - " + str(unique_key))
+        }
