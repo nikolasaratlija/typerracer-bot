@@ -39,7 +39,7 @@ class Typeracer(discord.Client):
         # region command start: can start a race by typing a certain command
         try:
             if message.content == '/typeracer start' and self.is_joining_phase is False:
-                await self.announce_race(message.channel)
+                await self.await_players(message.channel)
                 await self.countdown(message.channel)
                 await self.send_random_text(message.channel)
         except exceptions.NoParticipantsException:
@@ -70,11 +70,15 @@ class Typeracer(discord.Client):
         self.players[winner]["finished"] = True
         await channel.send(winner.mention + " got it right!")
 
-    async def announce_race(self, channel: discord.TextChannel):
+    async def await_players(self, channel: discord.TextChannel):
         self.is_joining_phase = True
 
-        countdown_message = await channel.send("A new race has started!")
+        countdown_message = await channel.send(
+            "A new race has started!" +
+            str(self.__JOINING_PHASE_TIMER) +
+            " second(s) to type `/typeracer join` to participate.")
 
+        # counts down the number in `countdown_message` by editing it in a loop
         for seconds in range(self.__JOINING_PHASE_TIMER):
             await discord.Message.edit(
                 countdown_message,
@@ -85,8 +89,8 @@ class Typeracer(discord.Client):
 
         await discord.Message.delete(countdown_message)
 
-        # if no one joins a race
-        if len(self.players) == 0:
+        # if no one joins a race, raise an exception
+        if not self.players == 0:
             raise exceptions.NoParticipantsException
 
     async def send_random_text(self, channel: discord.TextChannel):
