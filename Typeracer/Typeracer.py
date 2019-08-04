@@ -61,15 +61,6 @@ class Typeracer(discord.Client):
                 await self.close_race("All players have finished!", message.channel)
         # endregion
 
-    async def close_race(self, reason: str, channel: discord.TextChannel):
-        self.is_joining_phase = False
-        self.race_is_ongoing = False
-        await channel.send(reason + " To start a new race, type `/typeracer start`.")
-
-    async def mention_finishers(self, winner: discord.Member, channel: discord.TextChannel):
-        self.players[winner]["finished"] = True
-        await channel.send(winner.mention + " got it right!")
-
     async def await_players(self, channel: discord.TextChannel):
         self.is_joining_phase = True
 
@@ -90,12 +81,8 @@ class Typeracer(discord.Client):
         await discord.Message.delete(countdown_message)
 
         # if no one joins a race, raise an exception
-        if not self.players == 0:
+        if not self.players:
             raise exceptions.NoParticipantsException
-
-    async def send_random_text(self, channel: discord.TextChannel):
-        self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
-        await channel.send(self.current_text)
 
     async def countdown(self, channel: discord.TextChannel):
         self.is_joining_phase = False
@@ -107,3 +94,16 @@ class Typeracer(discord.Client):
         await sleep(randint(1, 3))  # This interval is random because I thought it would be funny.
         await discord.Message.edit(message, content="Type!")
         self.race_is_ongoing = True
+
+    async def send_random_text(self, channel: discord.TextChannel):
+        self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
+        await channel.send(self.current_text)
+
+    async def mention_finishers(self, winner: discord.Member, channel: discord.TextChannel):
+        self.players[winner]["finished"] = True
+        await channel.send(winner.mention + " got it right!")
+
+    async def close_race(self, reason: str, channel: discord.TextChannel):
+        self.is_joining_phase = False
+        self.race_is_ongoing = False
+        await channel.send(reason + " To start a new race, type `/typeracer start`.")
