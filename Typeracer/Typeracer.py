@@ -1,5 +1,5 @@
 import discord
-from discord import Member, TextChannel, Guild
+from discord import Member, TextChannel, Guild, CategoryChannel
 from random import randint
 from typing import Dict
 from asyncio import sleep
@@ -114,10 +114,16 @@ class Typeracer(discord.Client):
 
     @staticmethod
     async def create_party(server: Guild):
-        # a random hexadecimal number between 0 and 255
-        unique_key = hex(randint(0, 255))[2:]
+        # tries to find a channel category named "typeracers races". If it can't find one, it gets created
+        try:
+            races_category = next(category for category in server.categories if category.name == "typeracer races")
+        except StopIteration:
+            races_category = await server.create_category("typeracer races")
+
+        unique_key = hex(randint(0, 255))[2:]  # a random hexadecimal number between 0 and 255
+
         # returns a unique key used for identifying the newly created channel
         return {
             'id': str(unique_key),
-            'channel': await server.create_text_channel("🏁 Typeracer party - " + str(unique_key))
+            'channel': await races_category.create_text_channel("🏁 Typeracer party - #" + str(unique_key))
         }
