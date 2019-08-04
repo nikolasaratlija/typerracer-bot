@@ -1,5 +1,5 @@
 import discord
-from discord import Member, TextChannel, Guild, CategoryChannel
+from discord import Member, TextChannel, Guild
 from random import randint
 from typing import Dict
 from asyncio import sleep
