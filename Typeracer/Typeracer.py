@@ -1,4 +1,5 @@
 import discord
+from discord import Member, TextChannel
 from random import randint
 from typing import Dict
 from asyncio import sleep
@@ -61,7 +62,7 @@ class Typeracer(discord.Client):
                 await self.close_race("All players have finished!", message.channel)
         # endregion
 
-    async def await_players(self, channel: discord.TextChannel):
+    async def await_players(self, channel: TextChannel):
         self.is_joining_phase = True
 
         countdown_message = await channel.send(
@@ -84,7 +85,7 @@ class Typeracer(discord.Client):
         if not self.players:
             raise exceptions.NoParticipantsException
 
-    async def countdown(self, channel: discord.TextChannel):
+    async def countdown(self, channel: TextChannel):
         self.is_joining_phase = False
         message = await channel.send("All participants have been locked in...")
         await sleep(1)
@@ -95,15 +96,15 @@ class Typeracer(discord.Client):
         await discord.Message.edit(message, content="Type!")
         self.race_is_ongoing = True
 
-    async def send_random_text(self, channel: discord.TextChannel):
+    async def send_random_text(self, channel: TextChannel):
         self.current_text = TEXTS[randint(0, len(TEXTS) - 1)]
         await channel.send(self.current_text)
 
-    async def mention_finishers(self, winner: discord.Member, channel: discord.TextChannel):
+    async def mention_finishers(self, channel: TextChannel, winner: Member):
         self.players[winner]["finished"] = True
         await channel.send(winner.mention + " got it right!")
 
-    async def close_race(self, reason: str, channel: discord.TextChannel):
+    async def close_race(self, reason: str, channel: TextChannel):
         self.is_joining_phase = False
         self.race_is_ongoing = False
         await channel.send(reason + " To start a new race, type `/typeracer start`.")
