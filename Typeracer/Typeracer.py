@@ -57,7 +57,7 @@ class Typeracer(discord.Client):
         # region members who type out the text correctly during a race, win
         if self.race_is_ongoing is True:
             if message.author in self.players and message.content == self.current_text:
-                await self.mention_finishers(message.author, message.channel)
+                await self.mention_finishers(message.channel, message.author)
             # checks whether all players have finished
             if all(player["finished"] is True for player in self.players.values()) is True:
                 await self.close_race("All players have finished!", message.channel)
