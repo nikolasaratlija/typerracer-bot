@@ -6,11 +6,11 @@ class Helper(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def commands(self, ctx):
+    async def help(self, ctx):
         prefix = str(self.bot.command_prefix)
 
         await ctx.send(
-            "Command list: \n"
-            "`" + prefix + "commands`: A list of commands. \n"
-            "`" + prefix + "create-party`: Starts a new race. Client will be given 10 seconds to join the race. \n"
-            "`" + prefix + "join`: Adds the client who typed this command to a race if one has been started.")
+            "__**Commands**__: \n"
+            f"**{prefix}help**: A list of commands. \n"
+            f"**{prefix}create-party**: Creates a new channel in which the race will be held. \n"
+            f"**{prefix}join xx**: Signs you up for a race provided the ID is correct.")
