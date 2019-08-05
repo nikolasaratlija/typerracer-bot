@@ -20,11 +20,14 @@ class PartyManager(commands.Cog):
             self.bot = bot
             self.TEXTS = json.load(json_file)['texts']
 
-    async def prepare(self, party: Party.Party):
+    async def prepare(self, party: Party.Party, ctx):
         self.parties.append(party)
-        await self.await_players(party)
-        await self.countdown(party)
-        await self.send_text(party)
+        try:
+            await self.await_players(party, ctx.message.channel)
+            await self.countdown(party)
+            await self.send_text(party)
+        except exceptions.NoParticipantsException:
+            await party.channel.send("No one joined the party...")
 
     @commands.command()
     async def join(self, ctx, party_id):
@@ -33,17 +36,16 @@ class PartyManager(commands.Cog):
             try:
                 party = next(x for x in self.parties if x.party_id == party_id)
                 party.add_player(ctx.message.author)
-                await ctx.send(ctx.message.author.name + " has joined party " + party_id)
+                await party.channel.send(ctx.message.author.mention + " has joined party " + party_id)
             except StopIteration:
                 await ctx.send("A party with id " + party_id + " does not exist.")
 
-    async def await_players(self, party: Party):
+    async def await_players(self, party: Party, called_from: discord.TextChannel):
         def countdown_message_generator(sec):
-            return "A new race has started! You have " + \
-                   str(sec) + \
-                   " second(s) to type `/typeracer join " + party.party_id + "` to participate."
+            return "A new race has started! You have " + str(sec) + \
+                   " second(s) to type `" + str(self.bot.command_prefix) + "join " + party.party_id + "` to join."
 
-        countdown_message = await party.channel.send(
+        countdown_message = await called_from.send(
             countdown_message_generator(self.__JOINING_PHASE_TIMER))
 
         # counts down the number in `countdown_message` by editing it in a loop
@@ -53,8 +55,7 @@ class PartyManager(commands.Cog):
                 content=countdown_message_generator(self.__JOINING_PHASE_TIMER - seconds))
             await sleep(1)
 
-        # message gets deleted after joining phase is over
-        await discord.Message.delete(countdown_message)
+        await discord.Message.edit(countdown_message, content="Invite for party " + party.party_id + " expired.")
 
         # if no one joins a race, raise an exception
         if not party.players:

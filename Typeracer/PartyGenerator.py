@@ -11,7 +11,7 @@ class PartyGenerator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(name="create-party")
     async def create_party(self, ctx):
         # tries to find a channel category named "typeracers races". If it can't find one, it gets created
         try:
@@ -26,4 +26,4 @@ class PartyGenerator(commands.Cog):
         await ctx.send("Typeracer party " + str(unique_key) + " created.")
 
         manager: PartyManager = self.bot.get_cog('PartyManager')
-        await manager.prepare(Party.Party(unique_key, party))
+        await manager.prepare(Party.Party(unique_key, party), ctx)
