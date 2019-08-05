@@ -16,8 +16,8 @@ class PartyManager(commands.Cog):
     parties: List[Party.Party] = []
 
     def __init__(self, bot):
+        self.bot = bot
         with open("texts.json") as json_file:
-            self.bot = bot
             self.TEXTS = json.load(json_file)['texts']
 
     async def prepare(self, party: Party.Party, ctx):
