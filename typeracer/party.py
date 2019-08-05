@@ -1,6 +1,6 @@
 from discord import TextChannel
 from typing import List
-from Typeracer import player
+from typeracer import player
 
 
 class Party:

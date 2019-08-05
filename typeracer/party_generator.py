@@ -21,9 +21,9 @@ class PartyGenerator(commands.Cog):
 
         # unique_key is used for identifying a party channel
         unique_key = str(hex(randint(0, 255))[2:])  # a random hexadecimal number between 0 and 255
-        party = await races_category.create_text_channel("Typeracer party " + str(unique_key))
+        party = await races_category.create_text_channel("typeracer party " + str(unique_key))
 
-        await ctx.send("Typeracer party " + str(unique_key) + " created.")
+        await ctx.send("typeracer party " + str(unique_key) + " created.")
 
         manager: PartyManager = self.bot.get_cog('PartyManager')
         await manager.prepare(Party(unique_key, party), ctx)
