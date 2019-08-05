@@ -1,10 +1,15 @@
 from discord.ext import commands
 from random import randint
+
 from Typeracer import Party
+from Typeracer import PartyManager
 
 
 class PartyGenerator(commands.Cog):
     """"Creates a dedicated channel in which a typing race will be held"""
+
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def create_party(self, ctx):
@@ -14,8 +19,11 @@ class PartyGenerator(commands.Cog):
         except StopIteration:
             races_category = await ctx.guild.create_category("typeracer races")
 
+        # unique_key is used for identifying a party channel
         unique_key = str(hex(randint(0, 255))[2:])  # a random hexadecimal number between 0 and 255
-        party = await races_category.create_text_channel("🏁 Typeracer party - #" + str(unique_key))
+        party = await races_category.create_text_channel("Typeracer party " + str(unique_key))
 
-        # returns a unique key used for identifying the newly created channel
-        return Party.Party(unique_key, party)
+        await ctx.send("Typeracer party " + str(unique_key) + " created.")
+
+        manager: PartyManager = self.bot.get_cog('PartyManager')
+        await manager.prepare(Party.Party(unique_key, party))
