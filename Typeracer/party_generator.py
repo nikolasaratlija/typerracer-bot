@@ -1,8 +1,8 @@
 from discord.ext import commands
 from random import randint
 
-from Typeracer import Party
-from Typeracer import PartyManager
+from .party import Party
+from .party_manager import PartyManager
 
 
 class PartyGenerator(commands.Cog):
@@ -26,4 +26,4 @@ class PartyGenerator(commands.Cog):
         await ctx.send("Typeracer party " + str(unique_key) + " created.")
 
         manager: PartyManager = self.bot.get_cog('PartyManager')
-        await manager.prepare(Party.Party(unique_key, party), ctx)
+        await manager.prepare(Party(unique_key, party), ctx)

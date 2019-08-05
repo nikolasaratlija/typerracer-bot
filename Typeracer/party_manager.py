@@ -6,27 +6,27 @@ import json
 import discord
 from discord.ext import commands
 
-from Typeracer import exceptions
-from Typeracer import Party
+from .exceptions import NoParticipantsException
+from .party import Party
 
 
 class PartyManager(commands.Cog):
     __JOINING_PHASE_TIMER = 10
 
-    parties: List[Party.Party] = []
+    parties: List[Party] = []
 
     def __init__(self, bot):
         self.bot = bot
         with open("texts.json") as json_file:
             self.TEXTS = json.load(json_file)['texts']
 
-    async def prepare(self, party: Party.Party, ctx):
+    async def prepare(self, party: Party, ctx):
         self.parties.append(party)
         try:
             await self.await_players(party, ctx.message.channel)
             await self.countdown(party)
             await self.send_text(party)
-        except exceptions.NoParticipantsException:
+        except NoParticipantsException:
             await party.channel.send("No one joined the party...")
 
     @commands.command()

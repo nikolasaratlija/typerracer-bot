@@ -1,17 +1,17 @@
 import discord
 from discord.ext import commands
 
-from Typeracer import Helper
-from Typeracer import PartyGenerator
-from Typeracer import PartyManager
+from .helper import Helper
+from .party_generator import PartyGenerator
+from .party_manager import PartyManager
 
 typeracer = commands.Bot(command_prefix='$typeracer ')
 
 typeracer.remove_command("help")  # removes the built-in help command
 
-typeracer.add_cog(Helper.Helper(typeracer))
-typeracer.add_cog(PartyGenerator.PartyGenerator(typeracer))
-typeracer.add_cog(PartyManager.PartyManager(typeracer))
+typeracer.add_cog(Helper(typeracer))
+typeracer.add_cog(PartyGenerator(typeracer))
+typeracer.add_cog(PartyManager(typeracer))
 
 
 @typeracer.event
