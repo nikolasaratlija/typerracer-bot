@@ -7,7 +7,7 @@ from Typeracer import PartyManager
 
 typeracer = commands.Bot(command_prefix='$typeracer ')
 
-typeracer.remove_command("help")
+typeracer.remove_command("help")  # removes the built-in help command
 
 typeracer.add_cog(Helper.Helper(typeracer))
 typeracer.add_cog(PartyGenerator.PartyGenerator(typeracer))
