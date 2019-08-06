@@ -59,7 +59,7 @@ class PartyManager(commands.Cog):
 
         # if no one joins a race, raise an exception
         if not party.players:
-            raise exceptions.NoParticipantsException
+            raise NoParticipantsException
 
     @staticmethod
     async def countdown(party: Party):
