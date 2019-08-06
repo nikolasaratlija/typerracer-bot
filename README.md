@@ -1,4 +1,4 @@
-#Discord Typeracer bot
+# Discord Typeracer bot
 
 A bot for Discord inspired by typeracer.com
 
