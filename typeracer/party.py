@@ -1,10 +1,10 @@
 from discord import TextChannel
 from typing import List
-from typeracer import player
+from .player import Player
 
 
 class Party:
-    players: List[player.Player] = []
+    players: List[Player] = []
     is_started: bool = False
     current_text: str = ""
 
@@ -12,5 +12,5 @@ class Party:
         self.party_id = party_id
         self.channel = channel
 
-    def add_player(self, player: player):
+    def add_player(self, player: Player):
         self.players.append(player)
