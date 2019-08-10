@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from .exceptions import NoParticipantsException
 from .lobby import Lobby
+from .lobby_referee import LobbyReferee
 
 
 class LobbyManager(commands.Cog):
@@ -26,6 +27,8 @@ class LobbyManager(commands.Cog):
             await self.await_players(lobby, ctx.message.channel)
             await self.countdown(lobby)
             await self.send_text(lobby)
+            referee: LobbyReferee = self.bot.get_cog("LobbyReferee")
+            referee.watch(lobby)
         except NoParticipantsException:
             await lobby.channel.send("No one joined the lobby...")
 
@@ -34,7 +37,7 @@ class LobbyManager(commands.Cog):
         # checks if the lobby the member is trying to join exists
         if self.lobbies:
             try:
-                lobby = next(x for x in self.lobbies if x.lobby_id == lobby_id)
+                lobby = next(lobby for lobby in self.lobbies if lobby.lobby_id == lobby_id)
                 lobby.add_player(ctx.message.author)
                 await lobby.channel.send(ctx.message.author.mention + " has joined lobby " + lobby_id)
             except StopIteration:
@@ -74,9 +77,6 @@ class LobbyManager(commands.Cog):
     async def send_text(self, lobby: Lobby):
         lobby.current_text = self.TEXTS[randint(0, len(self.TEXTS) - 1)]
         await lobby.channel.send(lobby.current_text)
-
-    async def notify_finishers(self):
-        print("winner")
 
     async def close_lobby(self, lobby: Lobby):
         # announce that channel will be closing upon all players finishing the race or timeout
