@@ -5,8 +5,8 @@ A bot for Discord inspired by typeracer.com
 ## Commands
 
 **$typeracer help**: A list of commands.\
-**$typeracer create-party**: Creates a new channel in which the race will be held.\
-**$typeracer join xx**: Signs you up for a race provided the ID is correct.
+**$typeracer create-lobby**: Creates a new channel in which the race will be held.\
+**$typeracer join (lobby id)**: Adds you to a lobby, provided the given ID is correct.
 
 ## About
 

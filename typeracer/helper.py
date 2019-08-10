@@ -12,5 +12,5 @@ class Helper(commands.Cog):
         await ctx.send(
             "__**Commands**__: \n"
             f"**{prefix}help**: A list of commands. \n"
-            f"**{prefix}create-party**: Creates a new channel in which the race will be held. \n"
-            f"**{prefix}join xx**: Signs you up for a race provided the ID is correct.")
+            f"**{prefix}create-lobby**: Creates a new channel in which the race will be held. \n"
+            f"**{prefix}join (lobby id)**: Adds you to a lobby, provided the given ID is correct.")

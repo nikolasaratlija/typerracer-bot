@@ -2,19 +2,19 @@ import discord
 from discord.ext import commands
 
 from .helper import Helper
-from .party_generator import PartyGenerator
-from .party_manager import PartyManager
+from .lobby_generator import LobbyGenerator
+from .lobby_manager import LobbyManager
 
 typeracer = commands.Bot(command_prefix='$typeracer ')
 
 typeracer.remove_command("help")  # removes the built-in help command
 
 typeracer.add_cog(Helper(typeracer))
-typeracer.add_cog(PartyGenerator(typeracer))
-typeracer.add_cog(PartyManager(typeracer))
+typeracer.add_cog(LobbyGenerator(typeracer))
+typeracer.add_cog(LobbyManager(typeracer))
 
 
 @typeracer.event
 async def on_ready():
     await typeracer.change_presence(
-        activity=discord.Game(str(typeracer.command_prefix) + " help"))
+        activity=discord.Game(str(typeracer.command_prefix) + "help"))
