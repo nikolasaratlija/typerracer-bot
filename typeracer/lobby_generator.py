@@ -25,5 +25,5 @@ class LobbyGenerator(commands.Cog):
 
         await ctx.send("typeracer lobby " + str(unique_key) + " created.")
 
-        manager: LobbyManager = self.bot.get_cog('lobbyManager')
+        manager: LobbyManager = self.bot.get_cog('LobbyManager')
         await manager.prepare(Lobby(unique_key, lobby), ctx)
