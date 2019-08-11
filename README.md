@@ -14,4 +14,4 @@ This project was made for a school assignment where we were assigned to create a
 I've kept developing this project because it has provided to be a great motivation to learn Python, and I like the idea itself.
 ___
 
-Find me on discord: Nokia#9813
+Find me on discord: Nokia#8913
