@@ -21,7 +21,7 @@ class LobbyManager(commands.Cog):
         with open("texts.json") as json_file:
             self.TEXTS = json.load(json_file)['texts']
 
-    async def prepare(self, lobby: Lobby, ctx):
+    async def prepare(self, lobby: Lobby):
         # self.lobbies.append(lobby)
         try:
             print(1)
@@ -38,7 +38,7 @@ class LobbyManager(commands.Cog):
         try:
             # tries to the find the lobby by its id
             lobby = next(lobby for lobby in self.lobbies if lobby.lobby_id == lobby_id)
-            lobby.add_player(ctx.message.author)
+            await lobby.add_player(ctx.message.author)
             await lobby.channel.send(ctx.message.author.mention + " has joined lobby the lobby!")
         except StopIteration:
             await ctx.send("A lobby with id " + lobby_id + " does not exist.")

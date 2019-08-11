@@ -9,15 +9,14 @@ class Lobby:
     current_text: str = ""
     host: Member
 
-    def __init__(self, lobby_id, channel: TextChannel, host: Member):
+    def __init__(self, lobby_id, channel: TextChannel):
         self.lobby_id = lobby_id
         self.channel = channel
-        self.set_host(host)
 
-    def add_player(self, player: Player):
+    async def add_player(self, player: Player):
         self.players.append(player)
-        self.channel.set_permissions(player, read_messages=True, send_messages=True)
+        await self.channel.set_permissions(player, read_messages=True, send_messages=True)
 
-    def set_host(self, host: Member):
+    async def set_host(self, host: Member):
         self.host = host
-        self.channel.set_permissions(self.host, read_messages=True, send_messages=True)
+        await self.channel.set_permissions(self.host, read_messages=True, send_messages=True)
