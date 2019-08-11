@@ -22,26 +22,26 @@ class LobbyManager(commands.Cog):
             self.TEXTS = json.load(json_file)['texts']
 
     async def prepare(self, lobby: Lobby, ctx):
-        self.lobbies.append(lobby)
+        # self.lobbies.append(lobby)
         try:
-            await self.await_players(lobby, ctx.message.channel)
-            await self.countdown(lobby)
-            await self.send_text(lobby)
-            referee: LobbyReferee = self.bot.get_cog("LobbyReferee")
-            referee.watch(lobby)
+            print(1)
+            # await self.countdown(lobby)
+            # await self.send_text(lobby)
+            # referee: LobbyReferee = self.bot.get_cog("LobbyReferee")
+            # referee.watch(lobby)
         except NoParticipantsException:
             await lobby.channel.send("No one joined the lobby...")
 
     @commands.command()
     async def join(self, ctx, lobby_id):
         # checks if the lobby the member is trying to join exists
-        if self.lobbies:
-            try:
-                lobby = next(lobby for lobby in self.lobbies if lobby.lobby_id == lobby_id)
-                lobby.add_player(ctx.message.author)
-                await lobby.channel.send(ctx.message.author.mention + " has joined lobby " + lobby_id)
-            except StopIteration:
-                await ctx.send("A lobby with id " + lobby_id + " does not exist.")
+        try:
+            # tries to the find the lobby by its id
+            lobby = next(lobby for lobby in self.lobbies if lobby.lobby_id == lobby_id)
+            lobby.add_player(ctx.message.author)
+            await lobby.channel.send(ctx.message.author.mention + " has joined lobby the lobby!")
+        except StopIteration:
+            await ctx.send("A lobby with id " + lobby_id + " does not exist.")
 
     async def await_players(self, lobby: Lobby, called_from: discord.TextChannel):
         def countdown_message_generator(sec):
@@ -52,10 +52,10 @@ class LobbyManager(commands.Cog):
             countdown_message_generator(self.__JOINING_PHASE_TIMER))
 
         # counts down the number in `countdown_message` by editing it in a loop
-        for seconds in range(self.__JOINING_PHASE_TIMER):
+        for second in range(self.__JOINING_PHASE_TIMER):
             await discord.Message.edit(
                 countdown_message,
-                content=countdown_message_generator(self.__JOINING_PHASE_TIMER - seconds))
+                content=countdown_message_generator(self.__JOINING_PHASE_TIMER - second))
             await sleep(1)
 
         await discord.Message.edit(countdown_message, content="Invite for lobby " + lobby.lobby_id + " expired.")
