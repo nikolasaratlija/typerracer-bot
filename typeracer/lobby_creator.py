@@ -25,7 +25,7 @@ class LobbyCreator(commands.Cog):
         typeracer_lobby = Lobby(unique_key, lobby)
         await typeracer_lobby.set_host(ctx.message.author)
 
-        await self.notify_users(lobby, ctx)
+        await self.notify_users(typeracer_lobby, ctx)
         await self.delegate_to_manager(typeracer_lobby)
 
     async def get_typeracer_category(self, ctx):
