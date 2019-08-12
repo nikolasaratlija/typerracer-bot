@@ -15,7 +15,7 @@ class Lobby:
 
     async def add_player(self, player: Player):
         self.players.append(player)
-        await self.channel.set_permissions(player, read_messages=True, send_messages=True)
+        await self.channel.set_permissions(player.member, read_messages=True, send_messages=True)
 
     async def set_host(self, host: Member):
         self.host = host
