@@ -20,21 +20,6 @@ class LobbyManager(commands.Cog):
     def manage(self, lobby: Lobby):
         self.lobbies.append(lobby)
 
-    @commands.command()
-    async def join(self, ctx, lobby_id):
-        # checks if the lobby the member is trying to join exists
-        try:
-            # tries to the find the lobby by its id
-            lobby = next(lobby for lobby in self.lobbies if lobby.lobby_id == lobby_id)
-            await self.add_player(lobby, ctx.message.author)
-        except StopIteration:
-            await ctx.send("A lobby with id " + lobby_id + " does not exist.")
-
-    @join.error
-    async def join_error(self, ctx, error):
-        if isinstance(error, DuplicatePlayer):
-            await ctx.send(f"{ctx.message.author.mention}, you're already in a lobby.")
-
     @staticmethod
     async def add_player(lobby: Lobby, player: Player):
         await lobby.add_player(player)
@@ -52,7 +37,6 @@ def setup(bot):
     @is_called_from_lobby(LobbyManager.lobbies)
     @is_lobby_host(LobbyManager.lobbies)
     async def wait_for_host(ctx):
-        print(1)
         await ctx.send("Host has started the race!")
 
     @wait_for_host.error
@@ -63,4 +47,21 @@ def setup(bot):
         if isinstance(error, NotAHost):
             await ctx.send(f"{ctx.message.author.mention}, you are not the host of this lobby.")
 
+    @commands.command()
+    @is_not_called_from_lobby(LobbyManager.lobbies)
+    @user_not_in_lobby(LobbyManager.lobbies)
+    @lobby_exists(LobbyManager.lobbies)
+    async def join(ctx, lobby_id):
+        lobby = next(lobby for lobby in LobbyManager.lobbies if lobby.lobby_id == lobby_id)
+        await LobbyManager.add_player(lobby, ctx.message.author)
+
+    @join.error
+    async def join_error(ctx, error):
+        if isinstance(error, DuplicatePlayer):
+            await ctx.send(f"{ctx.message.author.mention}, you're already in a lobby.")
+
+        if isinstance(error, LobbyNotFound):
+            await ctx.send(f"{ctx.message.author.mention}, the channel you're trying to join does not exist.")
+
     bot.add_command(wait_for_host)
+    bot.add_command(join)

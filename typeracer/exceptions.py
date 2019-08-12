@@ -24,9 +24,15 @@ class NotAHost(commands.CheckFailure):
     pass
 
 
+class LobbyNotFound(commands.CheckFailure):
+    pass
+
+
 # endregion exceptions
 
 def is_lobby_host(lobbies):
+    """Checks whether the caller of this command is a host of a lobby"""
+
     async def predicate(ctx):
         user = ctx.message.author
 
@@ -38,6 +44,8 @@ def is_lobby_host(lobbies):
 
 
 def is_called_from_lobby(lobbies):
+    """Checks whether the channel this command is being called from is a lobby"""
+
     async def predicate(ctx):
         if not any(lobby for lobby in lobbies if ctx.channel == lobby.channel):
             raise NotCalledFromALobby
@@ -47,6 +55,8 @@ def is_called_from_lobby(lobbies):
 
 
 def is_not_called_from_lobby(lobbies):
+    """Checks whether the channel this command is being called from is a lobby"""
+
     async def predicate(ctx):
         if any(lobby for lobby in lobbies if ctx.channel == lobby.channel):
             raise CalledFromALobby
@@ -55,12 +65,25 @@ def is_not_called_from_lobby(lobbies):
     return commands.check(predicate)
 
 
-def player_is_not_in_lobby(lobbies):
+def user_not_in_lobby(lobbies):
+    """Checks whether the caller is already in a lobby"""
+
     async def predicate(ctx):
         player = ctx.message.author
 
         if any(lobby for lobby in lobbies if player in lobby.players):
             raise DuplicatePlayer
+        return True
+
+    return commands.check(predicate)
+
+
+def lobby_exists(lobbies):
+    """Checks whether the requested lobby exists"""
+
+    async def predicate(ctx):
+        if not any(lobby for lobby in lobbies if ctx.message.content[:2] == lobby.lobby_id):
+            raise LobbyNotFound
         return True
 
     return commands.check(predicate)
