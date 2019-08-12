@@ -51,4 +51,4 @@ class LobbyCreator(commands.Cog):
 
     async def delegate_to_manager(self, lobby: Lobby):
         manager: LobbyManager = self.bot.get_cog('LobbyManager')
-        await manager.prepare(lobby)
+        manager.manage(lobby)
