@@ -82,7 +82,8 @@ def lobby_exists(lobbies):
     """Checks whether the requested lobby exists"""
 
     async def predicate(ctx):
-        if not any(lobby for lobby in lobbies if ctx.message.content[:2] == lobby.lobby_id):
+        # TODO: only works with lobby ids that are 2 characters long
+        if not any(lobby for lobby in lobbies if ctx.message.content[-2:] == lobby.lobby_id):
             raise LobbyNotFound
         return True
 

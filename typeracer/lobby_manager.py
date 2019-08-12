@@ -4,7 +4,7 @@ from json import load
 
 from .lobby import Lobby
 from .player import Player
-from .exceptions import *
+from .checks import *
 
 from discord.ext import commands
 from discord import Member
@@ -52,10 +52,13 @@ def setup(bot):
     @commands.command()
     @is_not_called_from_lobby(LobbyManager.lobbies)
     @user_not_in_lobby(LobbyManager.lobbies)
-    @lobby_exists(LobbyManager.lobbies)
+    # @lobby_exists(LobbyManager.lobbies)
     async def join(ctx, lobby_id):
-        lobby = next(lobby for lobby in LobbyManager.lobbies if lobby.lobby_id == lobby_id)
-        await LobbyManager.add_player(lobby, ctx.message.author)
+        try:
+            lobby = next(lobby for lobby in LobbyManager.lobbies if lobby.lobby_id == lobby_id)
+            await LobbyManager.add_player(lobby, ctx.message.author)
+        except StopIteration:
+            ctx.send(f"{ctx.message.author.mention}, the channel you're trying to join does not exist.")
 
     @join.error
     async def join_error(ctx, error):
