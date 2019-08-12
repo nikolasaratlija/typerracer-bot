@@ -7,6 +7,7 @@ from .player import Player
 from .exceptions import *
 
 from discord.ext import commands
+from discord import Member
 
 
 class LobbyManager(commands.Cog):
@@ -21,9 +22,10 @@ class LobbyManager(commands.Cog):
         self.lobbies.append(lobby)
 
     @staticmethod
-    async def add_player(lobby: Lobby, player: Player):
+    async def add_player(lobby: Lobby, member: Member):
+        player = Player(member)
         await lobby.add_player(player)
-        await lobby.channel.send(f"{player.member.mention} has joined lobby the lobby!")
+        await lobby.channel.send(f"{member.mention} has joined lobby the lobby!")
 
     async def send_text(self, lobby: Lobby):
         lobby.current_text = self.TEXTS[randint(0, len(self.TEXTS) - 1)]
