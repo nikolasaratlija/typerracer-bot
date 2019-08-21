@@ -20,4 +20,5 @@ class Lobby:
 
     async def set_host(self, host: Member):
         self.host = host
-        await self.channel.set_permissions(self.host, read_messages=True, send_messages=True)
+        await self.add_player(host)
+        await self.channel.send(f"{self.host.mention} is the host of this lobby.")
