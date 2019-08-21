@@ -13,7 +13,8 @@ class Lobby:
         self.lobby_id = lobby_id
         self.channel = channel
 
-    async def add_player(self, player: Player):
+    async def add_player(self, member: Member):
+        player = Player(member)
         self.players.append(player)
         await self.channel.set_permissions(player.member, read_messages=True, send_messages=True)
 

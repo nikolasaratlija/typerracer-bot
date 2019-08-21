@@ -23,8 +23,7 @@ class LobbyManager(commands.Cog):
 
     @staticmethod
     async def add_player(lobby: Lobby, member: Member):
-        player = Player(member)
-        await lobby.add_player(player)
+        await lobby.add_player(member)
         await lobby.channel.send(f"{member.mention} has joined lobby the lobby!")
 
     async def send_text(self, lobby: Lobby):
