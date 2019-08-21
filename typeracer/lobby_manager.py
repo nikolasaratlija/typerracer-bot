@@ -58,7 +58,7 @@ def setup(bot):
             lobby = next(lobby for lobby in LobbyManager.lobbies if lobby.lobby_id == lobby_id)
             await LobbyManager.add_player(lobby, ctx.message.author)
         except StopIteration:
-            ctx.send(f"{ctx.message.author.mention}, the channel you're trying to join does not exist.")
+            raise LobbyNotFound
 
     @join.error
     async def join_error(ctx, error):
