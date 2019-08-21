@@ -69,11 +69,13 @@ def user_not_in_lobby(lobbies):
     """Checks whether the caller is already in a lobby"""
 
     async def predicate(ctx):
-        player = ctx.message.author
+        member = ctx.message.author
 
-        if any(lobby for lobby in lobbies if player in lobby.players):
-            raise DuplicatePlayer
-        return True
+        for lobby in lobbies:
+            if any(player for player in lobby.players if player.member == member):
+                raise DuplicatePlayer
+            else:
+                return True
 
     return commands.check(predicate)
 
