@@ -34,13 +34,13 @@ class LobbyManager(commands.Cog):
 def setup(bot):
     bot.add_cog(LobbyManager(bot))
 
-    @commands.command(name="start")
+    @commands.command()
     @is_called_from_lobby(LobbyManager.lobbies)
     @is_lobby_host(LobbyManager.lobbies)
-    async def wait_for_host(ctx):
+    async def start(ctx):
         await ctx.send("Host has started the race!")
 
-    @wait_for_host.error
+    @start.error
     async def start_error(ctx, error):
         if isinstance(error, NotCalledFromALobby):
             await ctx.send(f"{ctx.message.author.mention}, this channel is not a Typeracer lobby.")
@@ -67,5 +67,5 @@ def setup(bot):
         if isinstance(error, LobbyNotFound):
             await ctx.send(f"{ctx.message.author.mention}, the channel you're trying to join does not exist.")
 
-    bot.add_command(wait_for_host)
+    bot.add_command(start)
     bot.add_command(join)
