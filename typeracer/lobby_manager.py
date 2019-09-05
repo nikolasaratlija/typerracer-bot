@@ -33,10 +33,11 @@ class LobbyManager(commands.Cog):
 
 def setup(bot):
     bot.add_cog(LobbyManager(bot))
+    lobby_manager = bot.get_cog('LobbyManager')
 
     @commands.command()
-    @is_called_from_lobby(LobbyManager.lobbies)
-    @is_lobby_host(LobbyManager.lobbies)
+    @is_called_from_lobby(lobby_manager.lobbies)
+    @is_lobby_host(lobby_manager.lobbies)
     async def start(ctx):
         await ctx.send("Host has started the race!")
 
@@ -49,13 +50,13 @@ def setup(bot):
             await ctx.send(f"{ctx.message.author.mention}, you are not the host of this lobby.")
 
     @commands.command()
-    @is_not_called_from_lobby(LobbyManager.lobbies)
-    @user_not_in_lobby(LobbyManager.lobbies)
+    @is_not_called_from_lobby(lobby_manager.lobbies)
+    @user_not_in_lobby(lobby_manager.lobbies)
     # @lobby_exists(LobbyManager.lobbies)
     async def join(ctx, lobby_id):
         try:
-            lobby = next(lobby for lobby in LobbyManager.lobbies if lobby.lobby_id == lobby_id)
-            await LobbyManager.add_player(lobby, ctx.message.author)
+            lobby = next(lobby for lobby in lobby_manager.lobbies if lobby.lobby_id == lobby_id)
+            await lobby_manager.add_player(lobby, ctx.message.author)
         except StopIteration:
             raise LobbyNotFound
 
