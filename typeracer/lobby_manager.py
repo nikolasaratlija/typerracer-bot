@@ -26,9 +26,8 @@ class LobbyManager(commands.Cog):
         await lobby.add_player(member)
         await lobby.channel.send(f"{member.mention} has joined lobby the lobby!")
 
-    async def send_text(self, lobby: Lobby):
-        lobby.current_text = self.TEXTS[randint(0, len(self.TEXTS) - 1)]
-        await lobby.channel.send(lobby.current_text)
+    def send_text(self):
+        return self.TEXTS[randint(0, len(self.TEXTS) - 1)]
 
 
 def setup(bot):
@@ -40,6 +39,7 @@ def setup(bot):
     @is_lobby_host(lobby_manager.lobbies)
     async def start(ctx):
         await ctx.send("Host has started the race!")
+        await ctx.send(lobby_manager.send_text())
 
     @start.error
     async def start_error(ctx, error):
