@@ -13,7 +13,6 @@ typeracer.add_cog(Helper(typeracer))
 
 typeracer.add_cog(LobbyCreator(typeracer))
 typeracer.load_extension('typeracer.lobby_manager')
-typeracer.add_cog(LobbyReferee(typeracer))
 
 
 @typeracer.event

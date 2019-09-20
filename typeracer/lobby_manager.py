@@ -2,8 +2,7 @@ from typing import List
 from random import randint
 from json import load
 
-from .lobby import Lobby
-from .player import Player
+from typeracer.entities.lobby import Lobby
 from .checks import *
 
 from discord.ext import commands

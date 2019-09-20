@@ -2,7 +2,7 @@ from discord import CategoryChannel, TextChannel
 from discord.ext import commands
 from random import randint
 
-from .lobby import Lobby
+from typeracer.entities.lobby import Lobby
 from .lobby_manager import LobbyManager
 
 

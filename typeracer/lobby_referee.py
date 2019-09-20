@@ -3,7 +3,7 @@ from typing import List
 from discord import Member
 from discord.ext import commands
 
-from .lobby import Lobby
+from typeracer.entities.lobby import Lobby
 
 
 class LobbyReferee(commands.Cog):

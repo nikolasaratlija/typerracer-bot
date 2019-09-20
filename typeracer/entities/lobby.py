@@ -1,6 +1,6 @@
 from discord import TextChannel, Member
 from typing import List
-from .player import Player
+from typeracer.entities.player import Player
 
 
 class Lobby:
