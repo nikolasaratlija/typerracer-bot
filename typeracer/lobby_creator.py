@@ -19,8 +19,8 @@ class LobbyCreator(commands.Cog):
         category = await self.get_typeracer_category(ctx)
 
         # unique_key is used for identifying a lobby channel
-        unique_key = str(hex(randint(0, 255))[2:])  # a random hexadecimal number between 0 and 255
-        lobby = await category.create_text_channel("typeracer lobby " + str(unique_key))
+        unique_key = str(randint(0, 100))  # a random hexadecimal number between 0 and 255
+        lobby = await category.create_text_channel(f"typeracer lobby {unique_key}")
 
         typeracer_lobby = Lobby(unique_key, lobby)
         await typeracer_lobby.set_host(ctx.message.author)
