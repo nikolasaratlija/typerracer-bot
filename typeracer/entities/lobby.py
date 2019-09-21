@@ -22,3 +22,9 @@ class Lobby:
         self.host = host
         await self.add_player(host)
         await self.channel.send(f"{self.host.mention} is the host of this lobby.")
+
+    @staticmethod
+    def find_lobby_by_id(channel_id: int, channel_list: List[TextChannel]):
+        return next(
+            channel for channel in channel_list
+            if next(int(string) for string in channel.name.split() if string.isdigit()) == channel_id)
