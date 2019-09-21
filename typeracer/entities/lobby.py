@@ -9,7 +9,7 @@ class Lobby:
     current_text: str = ""
     host: Member
 
-    def __init__(self, lobby_id, channel: TextChannel):
+    def __init__(self, lobby_id: int, channel: TextChannel):
         self.lobby_id = lobby_id
         self.channel = channel
 
