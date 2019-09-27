@@ -1,34 +1,8 @@
 from discord.ext import commands
 
+from .entities.lobby import Lobby
+import typeracer.exceptions as exceptions
 
-# region exceptions
-
-
-class NoParticipants(Exception):
-    pass
-
-
-class DuplicatePlayer(commands.CheckFailure):
-    pass
-
-
-class NotCalledFromALobby(commands.CheckFailure):
-    pass
-
-
-class CalledFromALobby(commands.CheckFailure):
-    pass
-
-
-class NotAHost(commands.CheckFailure):
-    pass
-
-
-class LobbyNotFound(commands.CheckFailure):
-    pass
-
-
-# endregion exceptions
 
 def is_lobby_host(lobbies):
     """Checks whether the caller of this command is a host of a lobby"""
@@ -37,7 +11,7 @@ def is_lobby_host(lobbies):
         user = ctx.message.author
 
         if not any(lobby for lobby in lobbies if user == lobby.host):
-            raise NotAHost
+            raise exceptions.NotAHost
         return True
 
     return commands.check(predicate)
@@ -48,7 +22,7 @@ def is_called_from_lobby(lobbies):
 
     async def predicate(ctx):
         if not any(lobby for lobby in lobbies if ctx.channel == lobby.channel):
-            raise NotCalledFromALobby
+            raise exceptions.NotCalledFromALobby
         return True
 
     return commands.check(predicate)
@@ -59,7 +33,7 @@ def is_not_called_from_lobby(lobbies):
 
     async def predicate(ctx):
         if any(lobby for lobby in lobbies if ctx.channel == lobby.channel):
-            raise CalledFromALobby
+            raise exceptions.CalledFromALobby
         return True
 
     return commands.check(predicate)
@@ -73,7 +47,7 @@ def user_not_in_lobby(lobbies):
 
         for lobby in lobbies:
             if any(player for player in lobby.players if player.member == member):
-                raise DuplicatePlayer
+                raise exceptions.DuplicatePlayer
             else:
                 return True
 
@@ -84,9 +58,11 @@ def lobby_exists(lobbies):
     """Checks whether the requested lobby exists"""
 
     async def predicate(ctx):
-        # TODO: only works with lobby ids that are 2 characters long
-        if not any(lobby for lobby in lobbies if ctx.message.content[-2:] == lobby.lobby_id):
-            raise LobbyNotFound
+        lobby_id = Lobby.get_id_from_string(ctx.message.content)
+        try:
+            Lobby.get_lobby_by_id(lobby_id, lobbies)
+        except exceptions.LobbyNotFound:
+            raise exceptions.LobbyNotFound
         return True
 
     return commands.check(predicate)
