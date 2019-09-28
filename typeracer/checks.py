@@ -11,7 +11,7 @@ def is_lobby_host(lobbies):
         user = ctx.message.author
 
         if not any(lobby for lobby in lobbies if user == lobby.host):
-            raise exceptions.NotAHost
+            raise exceptions.NotLobbyHost
         return True
 
     return commands.check(predicate)
@@ -22,7 +22,7 @@ def is_called_from_lobby(lobbies):
 
     async def predicate(ctx):
         if not any(lobby for lobby in lobbies if ctx.channel == lobby.channel):
-            raise exceptions.NotCalledFromALobby
+            raise exceptions.NotCalledFromLobby
         return True
 
     return commands.check(predicate)

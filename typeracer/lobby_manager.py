@@ -37,10 +37,10 @@ def setup(bot):
 
     @start.error
     async def start_error(ctx, error):
-        if isinstance(error, exceptions.NotCalledFromALobby):
+        if isinstance(error, exceptions.NotCalledFromLobby):
             await ctx.send(f"{ctx.message.author.mention}, this channel is not a Typeracer lobby.")
 
-        if isinstance(error, exceptions.NotAHost):
+        if isinstance(error, exceptions.NotLobbyHost):
             await ctx.send(f"{ctx.message.author.mention}, you are not the host of this lobby.")
 
     @commands.command()
