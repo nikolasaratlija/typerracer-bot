@@ -17,7 +17,7 @@ class CalledFromALobby(commands.CheckFailure):
     pass
 
 
-class NotLobbyHost(commands.CheckFailure):
+class NotHostOfLobby(commands.CheckFailure):
     pass
 
 

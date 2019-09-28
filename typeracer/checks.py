@@ -10,8 +10,11 @@ def is_lobby_host(lobbies):
     async def predicate(ctx):
         user = ctx.message.author
 
-        if not any(lobby for lobby in lobbies if user == lobby.host):
-            raise exceptions.NotLobbyHost
+        lobby_id = Lobby.get_id_from_string(ctx.channel)
+        lobby = Lobby.get_lobby_by_id(lobby_id, lobbies)
+
+        if not user == lobby.host:
+            raise exceptions.NotHostOfLobby
         return True
 
     return commands.check(predicate)

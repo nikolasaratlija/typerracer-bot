@@ -40,7 +40,7 @@ def setup(bot):
         if isinstance(error, exceptions.NotCalledFromLobby):
             await ctx.send(f"{ctx.message.author.mention}, this channel is not a Typeracer lobby.")
 
-        if isinstance(error, exceptions.NotLobbyHost):
+        if isinstance(error, exceptions.NotHostOfLobby):
             await ctx.send(f"{ctx.message.author.mention}, you are not the host of this lobby.")
 
     @commands.command()
