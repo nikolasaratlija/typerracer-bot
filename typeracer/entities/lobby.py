@@ -1,5 +1,6 @@
 from discord import TextChannel, Member
 from typing import List
+from re import search
 
 from typeracer.exceptions import LobbyNotFound
 from typeracer.entities.player import Player
@@ -43,4 +44,4 @@ class Lobby:
     @staticmethod
     def get_id_from_string(string: str):
         """extracts the first number from a string and returns it as a string"""
-        return next(int(word) for word in string.split() if word.isdigit())
+        return search(r"[0-9]+", string).group()

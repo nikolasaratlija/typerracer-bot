@@ -9,8 +9,7 @@ def is_lobby_host(lobbies):
 
     async def predicate(ctx):
         user = ctx.message.author
-
-        lobby_id = Lobby.get_id_from_string(ctx.channel)
+        lobby_id = int(Lobby.get_id_from_string(ctx.channel.name))
         lobby = Lobby.get_lobby_by_id(lobby_id, lobbies)
 
         if not user == lobby.host:
